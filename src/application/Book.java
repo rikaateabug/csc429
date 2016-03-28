@@ -4,6 +4,11 @@ import java.sql.SQLException;
 import java.util.Enumeration;
 import java.util.Properties;
 import java.util.Vector;
+
+import userinterface.MainStageContainer;
+import userinterface.View;
+import javafx.scene.Scene;
+import javafx.stage.Stage;
 import exception.InvalidPrimaryKeyException;
 import model.EntityBase;
 
@@ -16,6 +21,7 @@ import model.EntityBase;
  * 
  * 
  * 	Constructors:
+ * 		- Creation of a blank book object, to be used by Librarian class
  * 		- Creation of a new object from user supplied data		(DONE)
  *		- Instantiation from the database given a primary key	(DONE/TESTED)
  *
@@ -35,28 +41,26 @@ public class Book extends EntityBase
 	private static final String tableName = "Book";
 	protected Properties dependencies;
 	
+	protected Librarian myLibrarian;
+	protected Stage myStage;
+	//----------------------------------------------------------
+	//Constructor taking in new data to create a new Book
+	//----------------------------------------------------------
+	public Book(Librarian lib) 
+	{
+		super(tableName);
+		persistentState = new Properties();
+		myStage = MainStageContainer.getInstance();
+		myLibrarian = lib;	
+	}
+	
 	//----------------------------------------------------------
 	//Constructor taking in new data to create a new Book
 	//----------------------------------------------------------
 	public Book(Properties bookProps) 
 	{
 		super(tableName);
-		persistentState = new Properties();
-		Enumeration allKeys = bookProps.propertyNames();
-		
-		
-		while (allKeys.hasMoreElements() == true) 
-		{
-			
-			//nextKey are the column names, nextValue are the corresponding row values
-			String nextKey = (String)allKeys.nextElement();
-			String nextValue = bookProps.getProperty(nextKey);
-			
-			if (nextValue != null)
-			{
-				persistentState.setProperty(nextKey, nextValue);
-			}
-		}
+		setBookProperties(bookProps);
 		
 	}
 	
@@ -105,8 +109,7 @@ public class Book extends EntityBase
 					if (nextValue != null) 
 					{
 						persistentState.setProperty(nextKey, nextValue);
-					}
-					
+					}			
 				}
 			}
 					
@@ -119,8 +122,8 @@ public class Book extends EntityBase
 		
 	}
 
-	
-	
+	//----------------------------------------------------------
+	// Save Method either updates or creates the Book in Database
 	//----------------------------------------------------------
 	public void save()
 	{
@@ -151,8 +154,6 @@ public class Book extends EntityBase
 	//----------------------------------------------------------
 	//Updating an existing Book record in the database
 	//----------------------------------------------------------
-	
-	
 	public void updateBookInDatabase() 
 	{
 		try 
@@ -168,14 +169,62 @@ public class Book extends EntityBase
 	}
 	
 	//----------------------------------------------------------
+	// Mutator Method to set fields
+	//----------------------------------------------------------
+	public void setBookProperties(Properties bookProps) {
+		
+		persistentState = new Properties();
+		Enumeration allKeys = bookProps.propertyNames();
+		
+		while (allKeys.hasMoreElements() == true) 
+		{
+			//nextKey are the column names, nextValue are the corresponding row values
+			String nextKey = (String)allKeys.nextElement();
+			String nextValue = bookProps.getProperty(nextKey);
+			
+			if (nextValue != null)
+			{
+				persistentState.setProperty(nextKey, nextValue);
+			}
+		}
+	}
+	
+	
+	//----------------------------------------------------------
+	// Method to create a new BookView
+	//----------------------------------------------------------
+	public void createAndShowBookView() {
+		
+		Scene currentScene = (Scene)myViews.get("BookView");
+		
+		if (currentScene == null) {
+			
+			View newView = new BookView(this);
+			currentScene = new Scene(newView);
+			myViews.put("BookView", currentScene);
+		}
+		swapToView(currentScene);
+	}
+	
+	//----------------------------------------------------------
+	// Method called by BookView to return to LibrarianView
+	//----------------------------------------------------------
+	public void done() {
+			myLibrarian.transactionDone();
+	}
+
+	
+	
+	
+	//----------------------------------------------------------
 	// Accessor Method
 	//----------------------------------------------------------
 	public Vector<String> getEntryListView() {
 		Vector<String> v = new Vector<String>();
 		
 		v.addElement(persistentState.getProperty("bookId"));
-		v.addElement(persistentState.getProperty("author"));
 		v.addElement(persistentState.getProperty("title"));
+		v.addElement(persistentState.getProperty("author"));
 		v.addElement(persistentState.getProperty("pubYear"));
 		v.addElement(persistentState.getProperty("status"));
 		

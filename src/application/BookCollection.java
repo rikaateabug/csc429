@@ -4,6 +4,10 @@ import java.util.Enumeration;
 import java.util.Properties;
 import java.util.Vector;
 
+import userinterface.MainStageContainer;
+import userinterface.View;
+import javafx.scene.Scene;
+import javafx.stage.Stage;
 import exception.InvalidPrimaryKeyException;
 import model.EntityBase;
 
@@ -12,7 +16,19 @@ public class BookCollection extends EntityBase {
 	
 	private static final String tableName = "Book";
 	private Vector<Book> books;
+	protected Librarian myLibrarian;
+	protected Stage myStage;
+	protected String bookTitle;
 	
+	//----------------------------------------------------------	
+	//Constructor for use with Librarian
+	//----------------------------------------------------------
+	public BookCollection(Librarian lib) {	//String title
+		super(tableName);
+		myStage = MainStageContainer.getInstance();
+		myLibrarian = lib;
+		books = new Vector<Book>();
+	}
 	//----------------------------------------------------------	
 	//Constructor sets up a blank Vector
 	//----------------------------------------------------------
@@ -136,6 +152,30 @@ public class BookCollection extends EntityBase {
 	}
 	
 	//----------------------------------------------------------
+	// Method to create a new BookCollectionView
+	//----------------------------------------------------------
+	public void createAndShowBookCollectionView() {
+		
+		Scene currentScene = (Scene)myViews.get("BookCollectionView");
+		
+		if (currentScene == null) {
+			
+			View newView = new BookCollectionView(this);
+			currentScene = new Scene(newView);
+			myViews.put("BookCollectionView", currentScene);
+		}
+		swapToView(currentScene);
+	}
+	
+	//----------------------------------------------------------
+	// Method called by BookCollectionView to return to LibrarianView
+	//----------------------------------------------------------
+	public void done() {
+			myLibrarian.transactionDone();
+	}
+
+	
+	//----------------------------------------------------------
 	// Method to print the Books in the Vector - used just for the tester
 	//----------------------------------------------------------
 	public void printAllBooks() {
@@ -169,11 +209,16 @@ public class BookCollection extends EntityBase {
 	// Abstract Methods
 	//----------------------------------------------------------
 	public Object getState(String criteria) {
-		if (criteria.equals("PatronList"))
-			return this;
-		
-		return null;
+	
+			if (criteria.equals("Books"))
+				return books;
+			else
+			if (criteria.equals("BookList"))
+				return this;
+			
+			return null;
 	}
+	
 	public void stateChangeRequest(String arg0, Object arg1) {
 		// TODO Auto-generated method stub
 		

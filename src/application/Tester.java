@@ -4,6 +4,9 @@ import java.util.Properties;
 import java.util.Scanner;
 import java.util.Vector;
 
+import javafx.scene.Scene;
+import javafx.scene.control.Button;
+import javafx.stage.Stage;
 import exception.InvalidPrimaryKeyException;
 
 public class Tester {
@@ -11,52 +14,10 @@ public class Tester {
 	
 	//Note that in order to connect to the Database the dbConfig file 
 	//should be in the root of the project directory (workspace - csc429, NOT BIN OR SRC)
-	public static void main(String [] args) throws InvalidPrimaryKeyException {
-		
-/////////////////////////////////////////////////////////////////////////////////////////////////////
-		//OLD TEST STUFF
-		//Book b = new Book("2");
-		//System.out.println(b.toString());
-		
-		/**	FOR INSERTING A NEW BOOK
-		 * Ensure that the bookId field is omitted OR
-		 * the bookId is given an id.
-		Properties newBook = new Properties();
-		newBook.setProperty("status", "out");
-		//newBook.setProperty("bookId", "3");
-		newBook.setProperty("author", "Danny W");
-		newBook.setProperty("title", "Some");
-		newBook.setProperty("pubYear", "2016");
-		
-		Book b = new Book(newBook);
-		b.insertNewBook();
-		*/
-		
-		//Testing Patron Collection
-		//PatronCollection pC = new PatronCollection();
-		//pC.findPatronsWithNameLike("J");
-		//pC.findPatronsAtZipCode("14420");
-		//pC.findPatronsYoungerThan("1970-00-00");
-		//pC.printAllPatrons();
+	//public static void main(String [] args) throws InvalidPrimaryKeyException {
 		
 		/**
-		//For Updating a Book
-		Properties newBookVals = new Properties();
-		newBookVals.setProperty("status", "out");
-		newBookVals.setProperty("author", "Joe Something");
-		newBookVals.setProperty("title", "Some");
-		newBookVals.setProperty("pubYear", "2017");
-		
-		Book oldBook = new Book("2");
-		System.out.println(oldBook.toString());
-		
-		oldBook.updateBookInDatabase(newBookVals);
-		System.out.println(oldBook.toString());
-		*/
-/////////////////////////////////////////////////////////////////////////////////////////////////////		
-		
 		Scanner sc = new Scanner(System.in);
-		/**
 		//----------------------------------------------------------	
 		//	Test Case 1: Books matching part of a given title
 		//----------------------------------------------------------
@@ -154,8 +115,6 @@ public class Tester {
 		b.save();
 		*/
 		
-		
-		
 		//----------------------------------------------------------	
 		//	Insert a new Transaction - Not Done
 		//----------------------------------------------------------
@@ -177,15 +136,13 @@ public class Tester {
 		b.save();
 		*/
 		
+		//----------------------------------------------------------	
+		//	Tester for Assignment 2
+		//----------------------------------------------------------
 		
-		System.out.println("Test 2: Print Book records published before a given year\n");
-		System.out.print("Enter the year: ");
-		String year = sc.nextLine();
-			if (year.isEmpty())
-				System.out.println("Yay");
-			else
-				System.out.println("Boo");
 		
-	}
+		
+		
+	//}
 	
 }

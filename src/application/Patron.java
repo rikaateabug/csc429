@@ -5,6 +5,9 @@ import java.util.Enumeration;
 import java.util.Properties;
 import java.util.Vector;
 
+import userinterface.View;
+import javafx.scene.Scene;
+import javafx.stage.Stage;
 import exception.InvalidPrimaryKeyException;
 import model.EntityBase;
 
@@ -35,28 +38,28 @@ public class Patron extends EntityBase
 	private static final String tableName = "Patron";
 	protected Properties dependencies;
 	
+	protected Librarian myLibrarian;
+	protected Stage myStage;
+	
+	
+	//----------------------------------------------------------
+	//Constructor used by librarian
+	//----------------------------------------------------------
+	public Patron(Librarian lib) 
+	{
+		super(tableName);
+		myLibrarian = lib;
+		persistentState = new Properties();
+		
+	}
+		
 	//----------------------------------------------------------
 	//Constructor taking in new data to create a new Patron
 	//----------------------------------------------------------
 	public Patron(Properties patronProps) 
 	{
 		super(tableName);
-		persistentState = new Properties();
-		Enumeration allKeys = patronProps.propertyNames();
-		
-		while (allKeys.hasMoreElements() == true) 
-		{
-			
-			//nextKey are the column names, nextValue are the corresponding row values
-			String nextKey = (String)allKeys.nextElement();
-			String nextValue = patronProps.getProperty(nextKey);
-			
-			if (nextValue != null)
-			{
-				persistentState.setProperty(nextKey, nextValue);
-			}
-		}
-		
+		setPatronProperties(patronProps);
 	}
 	
 	//----------------------------------------------------------
@@ -122,6 +125,29 @@ public class Patron extends EntityBase
 	}
 
 	//----------------------------------------------------------
+	// Mutator Method to set fields
+	//----------------------------------------------------------
+	public void setPatronProperties(Properties patronProps) {
+		
+		persistentState = new Properties();
+		Enumeration allKeys = patronProps.propertyNames();
+		
+		while (allKeys.hasMoreElements() == true) 
+		{
+			//nextKey are the column names, nextValue are the corresponding row values
+			String nextKey = (String)allKeys.nextElement();
+			String nextValue = patronProps.getProperty(nextKey);
+			
+			if (nextValue != null)
+			{
+				persistentState.setProperty(nextKey, nextValue);
+			}
+		}
+	}
+	
+	//----------------------------------------------------------
+	// Updates or inserts the patron into the database
+	//----------------------------------------------------------
 		public void save()
 		{
 			if (persistentState.getProperty("patronId") != null) {
@@ -165,6 +191,30 @@ public class Patron extends EntityBase
 		}
 	}
 
+	//----------------------------------------------------------
+	// Method to create a new PatronView
+	//----------------------------------------------------------
+	public void createAndShowPatronView() {
+		
+		Scene currentScene = (Scene)myViews.get("PatronView");
+		
+		if (currentScene == null) {
+			
+			View newView = new PatronView(this);
+			currentScene = new Scene(newView);
+			myViews.put("PatronView", currentScene);
+		}
+		swapToView(currentScene);
+	}
+	
+	//----------------------------------------------------------
+	// Method called by PatronView to return to LibrarianView
+	//----------------------------------------------------------
+	public void done() {
+			myLibrarian.transactionDone();
+	}
+
+	
 	//----------------------------------------------------------
 	// Accessor Method
 	//----------------------------------------------------------
